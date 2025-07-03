@@ -3,108 +3,604 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TMate SSH Creator</title>
+    <title>tmate Session Generator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            text-align: center; 
+        :root {
+            --primary-color: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary-color: #764ba2;
+            --success-color: #48bb78;
+            --error-color: #f56565;
+            --warning-color: #ed8936;
+            --bg-primary: #f7fafc;
+            --bg-secondary: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 1.5rem;
         }
-        input, button {
-            padding: 10px;
-            margin: 5px 0;
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            z-index: 1;
+        }
+
+        input[type="text"] {
             width: 100%;
-            max-width: 300px;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--bg-primary);
         }
-        #sessionInfo { 
-            background-color: #f4f4f4; 
-            padding: 15px; 
-            border-radius: 5px; 
-            margin-top: 20px; 
-            text-align: left; 
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
         }
-        .link-container {
-            margin: 10px 0;
+
+        .btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .session-info {
+            margin-top: 2rem;
+            padding: 0;
+            border-radius: var(--border-radius);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .session-info.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .session-info-header {
+            background: linear-gradient(135deg, var(--success-color) 0%, #38a169 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .session-info-header i {
+            margin-right: 0.5rem;
+        }
+
+        .session-info-body {
+            padding: 1.5rem;
+        }
+
+        .info-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .info-item:hover {
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-1px);
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
             word-break: break-all;
+            background: var(--bg-primary);
+            padding: 0.5rem;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+        }
+
+        .info-item:hover .copy-btn {
+            opacity: 1;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .link-value {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .link-value:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, var(--error-color) 0%, #e53e3e 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .error-message i {
+            margin-right: 0.5rem;
+        }
+
+        .note {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #dd6b20 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .note i {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--success-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            transform: translateX(100%);
+            transition: var(--transition);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast i {
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .toast {
+                top: 1rem;
+                right: 1rem;
+                left: 1rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Buat Sesi SSH tmate</h1>
-    
-    <div class="form-group">
-        <input 
-            type="text" 
-            id="sessionNameInput" 
-            placeholder="Nama Sesi (opsional)"
-        >
+    <div class="container">
+        <div class="header fade-in">
+            <h1><i class="fas fa-terminal"></i> tmate Generator</h1>
+            <p>Buat sesi SSH tmate dengan mudah dan cepat</p>
+        </div>
+        
+        <div class="card fade-in">
+            <form id="sessionForm">
+                <div class="form-group">
+                    <label for="sessionNameInput">
+                        <i class="fas fa-tag"></i> Nama Sesi
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-edit"></i>
+                        <input 
+                            type="text" 
+                            id="sessionNameInput" 
+                            placeholder="Masukkan nama sesi (opsional)"
+                            autocomplete="off"
+                        >
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="createSession">
+                    <i class="fas fa-plus-circle"></i> Buat Sesi Baru
+                </button>
+            </form>
+            
+            <div id="sessionInfo" class="session-info"></div>
+            <div id="errorMessage" class="error-message"></div>
+        </div>
     </div>
-    
-    <button id="createSession">Buat Sesi</button>
-    
-    <div id="sessionInfo"></div>
+
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Berhasil disalin ke clipboard!</span>
+    </div>
 
     <script>
-        document.getElementById('createSession').addEventListener('click', function() {
-            const button = this;
-            const sessionNameInput = document.getElementById('sessionNameInput');
-            const sessionName = sessionNameInput.value.trim();
+        class TmateGenerator {
+            constructor() {
+                this.form = document.getElementById('sessionForm');
+                this.button = document.getElementById('createSession');
+                this.sessionNameInput = document.getElementById('sessionNameInput');
+                this.sessionInfo = document.getElementById('sessionInfo');
+                this.errorMessage = document.getElementById('errorMessage');
+                this.toast = document.getElementById('toast');
+                this.toastMessage = document.getElementById('toastMessage');
+                
+                this.init();
+            }
 
-            button.disabled = true;
-            button.textContent = 'Membuat Sesi...';
+            init() {
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                
+                // Auto-focus input
+                this.sessionNameInput.focus();
+                
+                // Enter key handling
+                this.sessionNameInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.handleSubmit(e);
+                    }
+                });
+            }
 
-            fetch('/create-tmate', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    sessionName: sessionName || undefined 
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Gagal membuat sesi');
+            async handleSubmit(e) {
+                e.preventDefault();
+                
+                const sessionName = this.sessionNameInput.value.trim();
+                
+                this.setLoading(true);
+                this.hideError();
+                this.hideSessionInfo();
+
+                try {
+                    const response = await fetch('/create-tmate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            sessionName: sessionName || undefined 
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Gagal membuat sesi');
+                    }
+
+                    const data = await response.json();
+                    this.showSessionInfo(data);
+                    
+                } catch (error) {
+                    this.showError(error.message);
+                } finally {
+                    this.setLoading(false);
                 }
-                return response.json();
-            })
-            .then(data => {
-                button.disabled = false;
-                button.textContent = 'Buat Sesi';
+            }
 
-                document.getElementById('sessionInfo').innerHTML = `
-                    <h3>Informasi Sesi</h3>
-                    <div class="link-container">
-                        <strong>Nama Sesi:</strong> ${data.sessionName}
-                    </div>
-                    <div class="link-container">
-                        <strong>API Key:</strong> ${data.apiKey}
-                    </div>
-                    <div class="link-container">
-                        <strong>SSH Link:</strong> 
-                        <a href="ssh://${data.sshLink}" target="_blank">${data.sshLink}</a>
-                    </div>
-                    <div class="link-container">
-                        <strong>Web Link:</strong> 
-                        <a href="${data.webLink}" target="_blank">${data.webLink}</a>
-                    </div>
-                    <p><small>Catatan: Gunakan API Key untuk akses yang stabil</small></p>
-                `;
-            })
-            .catch(error => {
-                button.disabled = false;
-                button.textContent = 'Buat Sesi';
+            setLoading(loading) {
+                if (loading) {
+                    this.button.disabled = true;
+                    this.button.innerHTML = `
+                        <span class="loading-spinner"></span>
+                        Membuat Sesi...
+                    `;
+                } else {
+                    this.button.disabled = false;
+                    this.button.innerHTML = `
+                        <i class="fas fa-plus-circle"></i> Buat Sesi Baru
+                    `;
+                }
+            }
 
-                document.getElementById('sessionInfo').innerHTML = `
-                    <p style="color: red;">${error.message}</p>
+            showSessionInfo(data) {
+                this.sessionInfo.innerHTML = `
+                    <div class="session-info-header">
+                        <i class="fas fa-check-circle"></i>
+                        Sesi Berhasil Dibuat
+                    </div>
+                    <div class="session-info-body">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-tag"></i> Nama Sesi
+                            </div>
+                            <div class="info-value">
+                                ${data.sessionName}
+                                <button class="copy-btn" onclick="tmateGen.copyToClipboard('${data.sessionName}', 'Nama sesi')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-key"></i> API Key
+                            </div>
+                            <div class="info-value">
+                                ${data.apiKey}
+                                <button class="copy-btn" onclick="tmateGen.copyToClipboard('${data.apiKey}', 'API key')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-terminal"></i> SSH Connection
+                            </div>
+                            <div class="info-value">
+                                <a href="ssh://${data.sshLink}" class="link-value" target="_blank">${data.sshLink}</a>
+                                <button class="copy-btn" onclick="tmateGen.copyToClipboard('${data.sshLink}', 'SSH link')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-globe"></i> Web Interface
+                            </div>
+                            <div class="info-value">
+                                <a href="${data.webLink}" class="link-value" target="_blank">${data.webLink}</a>
+                                <button class="copy-btn" onclick="tmateGen.copyToClipboard('${data.webLink}', 'Web link')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="note">
+                            <i class="fas fa-info-circle"></i>
+                            Gunakan API Key untuk akses yang stabil dan konsisten
+                        </div>
+                    </div>
                 `;
-            });
-        });
+                
+                this.sessionInfo.classList.add('show');
+            }
+
+            showError(message) {
+                this.errorMessage.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    ${message}
+                `;
+                this.errorMessage.classList.add('show');
+            }
+
+            hideError() {
+                this.errorMessage.classList.remove('show');
+            }
+
+            hideSessionInfo() {
+                this.sessionInfo.classList.remove('show');
+            }
+
+            async copyToClipboard(text, label) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    this.showToast(`${label} berhasil disalin!`);
+                } catch (err) {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    this.showToast(`${label} berhasil disalin!`);
+                }
+            }
+
+            showToast(message) {
+                this.toastMessage.textContent = message;
+                this.toast.classList.add('show');
+                
+                setTimeout(() => {
+                    this.toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Initialize the application
+        const tmateGen = new TmateGenerator();
     </script>
 </body>
 </html>
