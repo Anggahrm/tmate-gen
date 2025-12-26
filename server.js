@@ -10,6 +10,13 @@ const port = process.env.PORT || 3000;
 const TMATE_API_KEY = process.env.TMATE_API_KEY;
 const TMATE_SOCKET = '/tmp/tmate.sock';
 
+// Validate that TMATE_API_KEY is set
+if (!TMATE_API_KEY) {
+    console.error('ERROR: TMATE_API_KEY environment variable is not set!');
+    console.error('Please set TMATE_API_KEY before starting the server.');
+    process.exit(1);
+}
+
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
