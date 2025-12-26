@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // API Key dari environment variable
-const TMATE_API_KEY = process.env.TMATE_API_KEY || 'tmk-914Hzkcw1fm57fD6wJTmyFUzB0';
+const TMATE_API_KEY = process.env.TMATE_API_KEY;
 const TMATE_SOCKET = '/tmp/tmate.sock';
 
 // Middleware
@@ -67,8 +67,7 @@ app.post('/create-tmate',
             res.json({
                 sessionName: sanitizedSessionName,
                 sshLink: sshConn,
-                webLink: webConn,
-                apiKey: TMATE_API_KEY
+                webLink: webConn
             });
         } catch (error) {
             console.error('Error creating tmate session:', error.message);
