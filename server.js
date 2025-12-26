@@ -6,8 +6,7 @@ const { body, validationResult } = require('express-validator');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// API Key dari environment variable
-const TMATE_API_KEY = process.env.TMATE_API_KEY || 'tmk-914Hzkcw1fm57fD6wJTmyFUzB0';
+// Socket path for tmate
 const TMATE_SOCKET = '/tmp/tmate.sock';
 
 // Middleware
@@ -42,37 +41,33 @@ app.post('/create-tmate',
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const sessionName = req.body.sessionName || `zumyfree-${Date.now()}`;
+        const sessionName = req.body.sessionName || `session-${Date.now()}`;
         
-        // Sanitize sessionName to prevent command injection (basic example)
-        // For production, consider a more robust sanitization or whitelist approach
+        // Sanitize sessionName to prevent command injection
         const sanitizedSessionName = sessionName.replace(/[^a-zA-Z0-9-_]/g, '');
 
-        // Modifikasi perintah untuk menggunakan socket
-        const createSessionCmd = `tmate -S ${TMATE_SOCKET} -k ${TMATE_API_KEY} -n ${sanitizedSessionName} new-session -d`;
+        // Create tmate session without API key (uses public tmate.io server)
+        const createSessionCmd = `tmate -S ${TMATE_SOCKET} -n ${sanitizedSessionName} new-session -d`;
 
         console.log('Executing command:', createSessionCmd);
 
         try {
             await executeCommand(createSessionCmd);
 
-            // Tunggu sebentar untuk memastikan sesi siap
-            // Tambahkan perintah wait tmate-ready untuk memastikan sesi benar-benar siap
+            // Wait for tmate session to be ready
             await executeCommand(`tmate -S ${TMATE_SOCKET} wait tmate-ready`);
 
-            // Ambil informasi koneksi
+            // Get connection information
             const sshConn = await executeCommand(`tmate -S ${TMATE_SOCKET} display -p "#{tmate_ssh}"`);
             const webConn = await executeCommand(`tmate -S ${TMATE_SOCKET} display -p "#{tmate_web}"`);
 
             res.json({
                 sessionName: sanitizedSessionName,
                 sshLink: sshConn,
-                webLink: webConn,
-                apiKey: TMATE_API_KEY
+                webLink: webConn
             });
         } catch (error) {
             console.error('Error creating tmate session:', error.message);
-            // Pass error to the error handling middleware
             next(new Error(`Failed to create tmate session: ${error.message}`));
         }
     }
