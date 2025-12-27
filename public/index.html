@@ -202,10 +202,13 @@
             </div>
             
             <div class="result-item" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd;">
-                <div class="result-label">🔐 Akses Root</div>
+                <div class="result-label">⚠️ Catatan untuk Heroku</div>
                 <div class="result-value" style="font-size: 0.85rem;">
-                    <strong>Opsi 1:</strong> Ketik <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px;">su</code> lalu masukkan password: <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px;">root</code><br><br>
-                    <strong>Opsi 2:</strong> Gunakan <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px;">sudo &lt;command&gt;</code> (tanpa password)
+                    Heroku memblokir <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px;">su</code> dan <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px;">sudo</code> karena flag keamanan "no new privileges".<br><br>
+                    <strong>Alternatif untuk root access:</strong><br>
+                    • Deploy di <strong>VPS/Server sendiri</strong> (DigitalOcean, Linode, dll)<br>
+                    • Gunakan <strong>Railway</strong> atau <strong>Render</strong> yang lebih fleksibel<br>
+                    • Deploy di <strong>Proxmox LXC/VM</strong> untuk akses root penuh
                 </div>
             </div>
         </div>
