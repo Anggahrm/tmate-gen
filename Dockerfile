@@ -1,7 +1,7 @@
-FROM ubuntu:22.04
+FROM debian:bookworm-slim
 
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install -y --no-install-recommends \
     tmate \
     openssh-client \
     wget \
